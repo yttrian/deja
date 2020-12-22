@@ -1,7 +1,7 @@
 package deja.client
 
 import com.mojang.blaze3d.systems.RenderSystem
-import deja.SnapController
+import deja.FlashbackController
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
@@ -14,7 +14,7 @@ object DejaFabricClient : ClientModInitializer, PacketRegistrar {
 
     override fun onInitializeClient() {
         registerPackets {
-            action(SnapController.SNAP_PACKET) {
+            action(FlashbackController.SNAP_PACKET) {
                 RenderSystem.recordRenderCall {
                     val snap = ScreenshotUtils.takeScreenshot(
                         window.framebufferWidth,
@@ -26,7 +26,7 @@ object DejaFabricClient : ClientModInitializer, PacketRegistrar {
                 message("SNAP ${snaps.size}!", true)
             }
 
-            action(SnapController.REPLAY_PACKET) {
+            action(FlashbackController.REPLAY_PACKET) {
                 client.openScreen(Flashback(snaps))
                 message("REPLAY ${snaps.size}!", true)
             }

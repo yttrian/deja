@@ -28,6 +28,9 @@ interface CommandRegistrar {
         Command.SINGLE_SUCCESS
     }
 
+    fun LiteralArgumentBuilder<ServerCommandSource>.add(controller: Controller) =
+        this.then(controller.baseCommand)
+
     fun CommandContext<ServerCommandSource>.respond(message: String): Unit =
         this.source.sendFeedback(LiteralText(message), false)
 }
