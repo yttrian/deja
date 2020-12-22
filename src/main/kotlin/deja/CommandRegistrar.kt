@@ -8,7 +8,7 @@ import net.minecraft.server.command.CommandManager
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.text.LiteralText
 
-interface CommandRegistrar{
+interface CommandRegistrar {
     fun registerCommands(base: String, dsl: LiteralArgumentBuilder<ServerCommandSource>.() -> Unit) {
         CommandRegistrationCallback.EVENT.register { dispatcher, _ ->
             dispatcher.register(CommandManager.literal(base).also(dsl))

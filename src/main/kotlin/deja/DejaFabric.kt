@@ -5,16 +5,14 @@ import net.fabricmc.api.ModInitializer
 object DejaFabric : ModInitializer, CommandRegistrar {
     override fun onInitialize() {
         registerCommands("deja") {
-            command("bar") {
-                does {
-                    respond("bar!")
-                }
+            does { respond("DejaFabric") }
+
+            command("snap") {
+                does(SnapController::snapNow)
             }
 
-            command("baz") {
-                does {
-                    respond("baz!")
-                }
+            command("replay") {
+                does(SnapController::replayNow)
             }
         }
     }
