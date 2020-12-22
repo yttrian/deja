@@ -3,13 +3,16 @@ package deja.client
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.DrawableHelper
 import net.minecraft.client.gui.screen.Screen
+import net.minecraft.client.render.BufferRenderer
+import net.minecraft.client.render.Tessellator
+import net.minecraft.client.render.VertexFormats
 import net.minecraft.client.texture.NativeImage
 import net.minecraft.client.texture.NativeImageBackedTexture
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.text.LiteralText
 import net.minecraft.util.Identifier
+import org.lwjgl.opengl.GL11C
 import java.awt.Color
-import kotlin.math.floor
 import kotlin.math.pow
 
 class Flashback(rawMemories: List<NativeImage>) : Screen(LiteralText("deja.flashback")) {
@@ -20,7 +23,7 @@ class Flashback(rawMemories: List<NativeImage>) : Screen(LiteralText("deja.flash
     private val end = (totalMemories.coerceAtMost(MEMORY_GOAL) / MEMORY_GOAL.toFloat()) * MAX_END_TIME
     private var time = 0f
 
-    override fun render(matrices: MatrixStack?, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun render(matrices: MatrixStack, mouseX: Int, mouseY: Int, delta: Float) {
         time += delta
 
         renderBackground(matrices)
@@ -30,25 +33,40 @@ class Flashback(rawMemories: List<NativeImage>) : Screen(LiteralText("deja.flash
 
         textureManager.bindTexture(memory)
 
-        fun Float.step(n: Int): Int = (floor(this / n.toFloat()) * n).toInt()
+        val zoom = (1 - BASE_ZOOM) / end * time + BASE_ZOOM
+        val memoryWidth = width * zoom
+        val memoryHeight = height * zoom
+        val memoryX = width / 2f - memoryWidth / 2f
+        val memoryY = height / 2f - memoryHeight / 2f
 
-        val zoom = ((1 - BASE_ZOOM) / end) * time + BASE_ZOOM
-        val memoryWidth = (width * zoom).step(2)
-        val memoryHeight = (height * zoom).step(2)
-        val memoryX = width / 2 - memoryWidth / 2
-        val memoryY = height / 2 - memoryHeight / 2
-
-        drawTexture(
+        drawMemory(
             matrices,
             memoryX,
             memoryY,
-            0f,
-            0f,
             memoryWidth,
-            memoryHeight,
-            memoryWidth,
-            memoryHeight,
+            memoryHeight
         )
+    }
+
+    private fun drawMemory(
+        matrices: MatrixStack,
+        x0: Float,
+        y0: Float,
+        width: Float,
+        height: Float
+    ) {
+        val x1 = x0 + width
+        val y1 = y0 + height
+
+        val bufferBuilder = Tessellator.getInstance().buffer
+        val matrix = matrices.peek().model
+        bufferBuilder.begin(GL11C.GL_QUADS, VertexFormats.POSITION_TEXTURE)
+        bufferBuilder.vertex(matrix, x0, y1, 0f).texture(0f, 1f).next()
+        bufferBuilder.vertex(matrix, x1, y1, 0f).texture(1f, 1f).next()
+        bufferBuilder.vertex(matrix, x1, y0, 0f).texture(1f, 0f).next()
+        bufferBuilder.vertex(matrix, x0, y0, 0f).texture(0f, 0f).next()
+        bufferBuilder.end()
+        BufferRenderer.draw(bufferBuilder)
     }
 
     private fun currentMemory(): Int = ((time / end).pow(3) * totalMemories).toInt()

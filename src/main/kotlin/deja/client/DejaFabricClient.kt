@@ -8,7 +8,6 @@ import net.fabricmc.api.Environment
 import net.minecraft.client.texture.NativeImage
 import net.minecraft.client.util.ScreenshotUtils
 
-
 @Environment(EnvType.CLIENT)
 object DejaFabricClient : ClientModInitializer, PacketRegistrar {
     private val snaps = mutableListOf<NativeImage>()
@@ -24,7 +23,7 @@ object DejaFabricClient : ClientModInitializer, PacketRegistrar {
                     )
                     snaps.add(snap)
                 }
-                message("SNAP!", true)
+                message("SNAP ${snaps.size}!", true)
             }
 
             action(SnapController.REPLAY_PACKET) {
