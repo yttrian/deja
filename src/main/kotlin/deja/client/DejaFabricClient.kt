@@ -7,7 +7,6 @@ import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.client.texture.NativeImage
 import net.minecraft.client.util.ScreenshotUtils
-import java.util.*
 
 
 @Environment(EnvType.CLIENT)

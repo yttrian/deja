@@ -9,7 +9,7 @@ import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.text.LiteralText
 import net.minecraft.util.Identifier
 import java.awt.Color
-import java.time.Duration
+import kotlin.math.floor
 import kotlin.math.pow
 
 class Flashback(rawMemories: List<NativeImage>) : Screen(LiteralText("deja.flashback")) {
@@ -28,16 +28,27 @@ class Flashback(rawMemories: List<NativeImage>) : Screen(LiteralText("deja.flash
 
         val memory = memories.getOrNull(currentMemory()) ?: return onClose()
 
-//        println(time)
-//        println(delta)
-
         textureManager.bindTexture(memory)
 
-//        val close = (end - time)
-//        val memoryWidth = (width / close).toInt()
-//        val memoryHeight = (height / close).toInt()
+        fun Float.step(n: Int): Int = (floor(this / n.toFloat()) * n).toInt()
 
-        drawTexture(matrices, 0, 0, 0f, 0f, width, height, width, height)
+        val zoom = ((1 - BASE_ZOOM) / end) * time + BASE_ZOOM
+        val memoryWidth = (width * zoom).step(2)
+        val memoryHeight = (height * zoom).step(2)
+        val memoryX = width / 2 - memoryWidth / 2
+        val memoryY = height / 2 - memoryHeight / 2
+
+        drawTexture(
+            matrices,
+            memoryX,
+            memoryY,
+            0f,
+            0f,
+            memoryWidth,
+            memoryHeight,
+            memoryWidth,
+            memoryHeight,
+        )
     }
 
     private fun currentMemory(): Int = ((time / end).pow(3) * totalMemories).toInt()
@@ -60,5 +71,6 @@ class Flashback(rawMemories: List<NativeImage>) : Screen(LiteralText("deja.flash
         private const val TICKS_PER_SECOND: Float = 20f
         private const val MEMORY_GOAL: Int = 80
         private const val MAX_END_TIME: Float = 30 * TICKS_PER_SECOND
+        private const val BASE_ZOOM: Float = 0.3f
     }
 }
