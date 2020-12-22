@@ -12,7 +12,7 @@ import java.util.*
 
 @Environment(EnvType.CLIENT)
 object DejaFabricClient : ClientModInitializer, PacketRegistrar {
-    private val snaps = ArrayDeque<NativeImage>()
+    private val snaps = mutableListOf<NativeImage>()
 
     override fun onInitializeClient() {
         registerPackets {
@@ -23,12 +23,13 @@ object DejaFabricClient : ClientModInitializer, PacketRegistrar {
                         window.framebufferHeight,
                         client.framebuffer
                     )
-                    snaps.offer(snap)
+                    snaps.add(snap)
                 }
                 message("SNAP!", true)
             }
 
             action(SnapController.REPLAY_PACKET) {
+                client.openScreen(Flashback(snaps))
                 message("REPLAY ${snaps.size}!", true)
             }
         }
