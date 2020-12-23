@@ -5,12 +5,12 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
 
 object DejaFabric : ModInitializer, CommandRegistrar {
     override fun onInitialize() {
-        ServerTickEvents.START_SERVER_TICK.register(FlashbackController.ServerTick)
+        ServerTickEvents.START_SERVER_TICK.register(TimeloopController.ServerTick)
 
         registerCommands("deja") {
             does { respond("DejaFabric") }
 
-            add(FlashbackController)
+            add(TimeloopController)
         }
     }
 }

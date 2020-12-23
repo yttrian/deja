@@ -15,10 +15,10 @@ import org.lwjgl.opengl.GL11C
 import java.awt.Color
 import kotlin.math.pow
 
-class Flashback(rawMemories: List<NativeImage>) : Screen(LiteralText("deja.flashback")) {
+class FlashbackPlayer(rawMemories: MutableList<NativeImage>) : Screen(LiteralText("deja.flashback")) {
     private val textureManager = MinecraftClient.getInstance().textureManager
 
-    private val memories = rawMemories.asReversed().map { it.toTexture() }
+    private val memories = rawMemories.asReversed().map { it.toTexture() }.also { rawMemories.clear() }
     private val totalMemories = memories.size
     private val end = (totalMemories.coerceAtMost(MEMORY_GOAL) / MEMORY_GOAL.toFloat()) * MAX_END_TIME
     private var time = 0f

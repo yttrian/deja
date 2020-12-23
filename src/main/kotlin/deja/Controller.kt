@@ -8,6 +8,7 @@ import net.minecraft.server.command.CommandManager
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.util.Identifier
+import java.time.Duration
 
 abstract class Controller(
     /**
@@ -30,4 +31,10 @@ abstract class Controller(
 
     protected fun ServerPlayerEntity.send(identifier: Identifier) =
         ServerSidePacketRegistry.INSTANCE.sendToPlayer(this, identifier, PacketByteBuf(Unpooled.buffer()))
+
+    protected fun Duration.toTicks(): Long = this.seconds * TICKS_PER_SECOND
+
+    companion object {
+        private const val TICKS_PER_SECOND = 20
+    }
 }
