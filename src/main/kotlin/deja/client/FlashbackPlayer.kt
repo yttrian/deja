@@ -22,7 +22,9 @@ class FlashbackPlayer(rawMemories: MutableList<NativeImage>) : AnimationScreen(L
      * Render loop
      */
     override fun render(matrices: MatrixStack) {
-        fun drawLastMemory() = drawCenteredImage(matrices, memories.last(), width.toFloat(), height.toFloat())
+        fun drawLastMemory() = memories.lastOrNull()?.let {
+            drawCenteredImage(matrices, it, width.toFloat(), height.toFloat())
+        }
 
         if (closing) {
             drawLastMemory()
@@ -47,6 +49,9 @@ class FlashbackPlayer(rawMemories: MutableList<NativeImage>) : AnimationScreen(L
         val dim = height / z.coerceAtLeast(0f)
 
         drawCenteredImage(matrices, MASK_TEXTURE, dim, dim)
+        if (time < FADE_TIME) {
+            drawFade(matrices)
+        }
     }
 
     private fun drawMemory(matrices: MatrixStack) {
@@ -60,6 +65,12 @@ class FlashbackPlayer(rawMemories: MutableList<NativeImage>) : AnimationScreen(L
         val memoryHeight = height * scale
 
         drawCenteredImage(matrices, memory, memoryWidth, memoryHeight)
+    }
+
+    private fun drawFade(matrices: MatrixStack) {
+        val alpha = linearInterpolate(0, FADE_TIME, 1f, 0f).coerceAtLeast(0f)
+        val fade = Color(0f, 0f, 0f, alpha)
+        DrawableHelper.fill(matrices, 0, 0, width, height, fade.rgb)
     }
 
     // https://www.desmos.com/calculator/pa7q4vcnho
@@ -84,11 +95,12 @@ class FlashbackPlayer(rawMemories: MutableList<NativeImage>) : AnimationScreen(L
     companion object {
         private const val MEMORY_GOAL: Int = 80
         private const val MASK_TIME: Int = 6 * TICKS_PER_SECOND
+        private const val FADE_TIME: Int = 4 * TICKS_PER_SECOND
         private const val MEMORY_TIME_START: Int = (MASK_TIME * 0.9f).toInt()
         private const val MEMORY_TIME_MIN: Int = 4 * TICKS_PER_SECOND
         private const val MEMORY_TIME_MAX: Int = 27 * TICKS_PER_SECOND
         private const val MASK_Z_MIN: Float = 8f
-        private const val MASK_Z_MAX: Float = 0f
+        private const val MASK_Z_MAX: Float = 0 - 1f
         private const val MEMORY_SCALE_MIN: Float = 0.05f
         private const val MEMORY_SCALE_MAX: Float = 1f
         private val MASK_TEXTURE = Identifier("deja", "textures/gui/mask.png")
