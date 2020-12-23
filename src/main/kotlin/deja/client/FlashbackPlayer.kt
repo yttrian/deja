@@ -1,49 +1,33 @@
 package deja.client
 
-import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.DrawableHelper
-import net.minecraft.client.gui.screen.Screen
-import net.minecraft.client.render.BufferRenderer
-import net.minecraft.client.render.Tessellator
-import net.minecraft.client.render.VertexFormats
 import net.minecraft.client.texture.NativeImage
-import net.minecraft.client.texture.NativeImageBackedTexture
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.text.LiteralText
 import net.minecraft.util.Identifier
-import org.lwjgl.opengl.GL11C
 import java.awt.Color
 import kotlin.math.pow
 
 /**
  * Screen for playing flashbacks
  */
-class FlashbackPlayer(rawMemories: MutableList<NativeImage>) : Screen(LiteralText("deja.flashback")) {
-    private val textureManager = MinecraftClient.getInstance().textureManager
-
-    private val memories = rawMemories.asReversed().map { it.toTexture() }.also { rawMemories.clear() }
+class FlashbackPlayer(rawMemories: MutableList<NativeImage>) : AnimationScreen(LiteralText("deja.flashback")) {
+    private val memories = rawMemories.asReversed().map { it.toTexture("memory") }.also { rawMemories.clear() }
     private val totalMemories = memories.size
     private val memoryDuration =
         ((totalMemories.coerceAtMost(MEMORY_GOAL) / MEMORY_GOAL.toFloat()) * MEMORY_TIME_MAX)
             .toInt().coerceAtLeast(MEMORY_TIME_MIN)
-    private var time = 0f
-    private var closing = false
 
     /**
      * Render loop
      */
-    override fun render(matrices: MatrixStack, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun render(matrices: MatrixStack) {
         fun drawLastMemory() = drawCenteredImage(matrices, memories.last(), width.toFloat(), height.toFloat())
 
         if (closing) {
             drawLastMemory()
             return
         }
-
-        time += delta
-
-        renderBackground(matrices)
-        super.render(matrices, mouseX, mouseY, delta)
 
         if (time > MEMORY_TIME_START) {
             drawMemory(matrices)
@@ -80,45 +64,11 @@ class FlashbackPlayer(rawMemories: MutableList<NativeImage>) : Screen(LiteralTex
         drawCenteredImage(matrices, memory, memoryWidth, memoryHeight)
     }
 
-    private fun drawCenteredImage(
-        matrices: MatrixStack,
-        texture: Identifier,
-        width: Float,
-        height: Float
-    ) {
-        textureManager.bindTexture(texture)
-
-        val x0 = this.width / 2f - width / 2f
-        val y0 = this.height / 2f - height / 2f
-        val x1 = x0 + width
-        val y1 = y0 + height
-
-        val bufferBuilder = Tessellator.getInstance().buffer
-        val matrix = matrices.peek().model
-        bufferBuilder.begin(GL11C.GL_QUADS, VertexFormats.POSITION_TEXTURE)
-        bufferBuilder.vertex(matrix, x0, y1, 0f).texture(0f, 1f).next()
-        bufferBuilder.vertex(matrix, x1, y1, 0f).texture(1f, 1f).next()
-        bufferBuilder.vertex(matrix, x1, y0, 0f).texture(1f, 0f).next()
-        bufferBuilder.vertex(matrix, x0, y0, 0f).texture(0f, 0f).next()
-        bufferBuilder.end()
-        BufferRenderer.draw(bufferBuilder)
-    }
-
     /**
      * Render a solid black background
      */
-    override fun renderBackground(matrices: MatrixStack?) {
+    override fun renderBackground(matrices: MatrixStack) {
         DrawableHelper.fill(matrices, 0, 0, width, height, Color.BLACK.rgb)
-    }
-
-    private fun NativeImage.toTexture(): Identifier =
-        textureManager.registerDynamicTexture("memory", NativeImageBackedTexture(this))
-
-    private fun Identifier.destroy(): Unit = textureManager.destroyTexture(this)
-
-    private fun close() {
-        closing = true
-        onClose()
     }
 
     /**
@@ -132,11 +82,10 @@ class FlashbackPlayer(rawMemories: MutableList<NativeImage>) : Screen(LiteralTex
     private fun Int.pow(n: Int) = this.toFloat().pow(n)
 
     companion object {
-        private const val TICKS_PER_SECOND: Int = 20
         private const val MEMORY_GOAL: Int = 80
-        private const val MASK_TIME: Int = 9 * TICKS_PER_SECOND
-        private const val MEMORY_TIME_START: Int = (MASK_TIME * 0.40f).toInt()
-        private const val MEMORY_TIME_MIN: Int = MASK_TIME + MEMORY_TIME_START * 2
+        private const val MASK_TIME: Int = 8 * TICKS_PER_SECOND
+        private const val MEMORY_TIME_START: Int = (MASK_TIME * 0.55f).toInt()
+        private const val MEMORY_TIME_MIN: Int = MASK_TIME + MEMORY_TIME_START
         private const val MEMORY_TIME_MAX: Int = 27 * TICKS_PER_SECOND
         private const val MASK_ZOOM_MIN: Float = 0.1f
         private const val MASK_ZOOM_MAX: Float = 20.0f
