@@ -6,8 +6,14 @@ import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 
+/**
+ * Entry point for the Deja client mod
+ */
 @Environment(EnvType.CLIENT)
 object DejaFabricClient : ClientModInitializer, PacketRegistrar {
+    /**
+     * On client mod initialize
+     */
     override fun onInitializeClient() {
         ClientTickEvents.START_CLIENT_TICK.register(FlashbackController.ClientTick)
 

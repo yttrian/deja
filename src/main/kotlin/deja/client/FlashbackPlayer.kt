@@ -15,6 +15,9 @@ import org.lwjgl.opengl.GL11C
 import java.awt.Color
 import kotlin.math.pow
 
+/**
+ * Screen for playing flashbacks
+ */
 class FlashbackPlayer(rawMemories: MutableList<NativeImage>) : Screen(LiteralText("deja.flashback")) {
     private val textureManager = MinecraftClient.getInstance().textureManager
 
@@ -23,6 +26,9 @@ class FlashbackPlayer(rawMemories: MutableList<NativeImage>) : Screen(LiteralTex
     private val end = (totalMemories.coerceAtMost(MEMORY_GOAL) / MEMORY_GOAL.toFloat()) * MAX_END_TIME
     private var time = 0f
 
+    /**
+     * Render loop
+     */
     override fun render(matrices: MatrixStack, mouseX: Int, mouseY: Int, delta: Float) {
         time += delta
 
@@ -71,6 +77,9 @@ class FlashbackPlayer(rawMemories: MutableList<NativeImage>) : Screen(LiteralTex
 
     private fun currentMemory(): Int = ((time / end).pow(3) * totalMemories).toInt()
 
+    /**
+     * Render a solid black background
+     */
     override fun renderBackground(matrices: MatrixStack?) {
         DrawableHelper.fill(matrices, 0, 0, width, height, Color.BLACK.rgb)
     }
@@ -80,6 +89,9 @@ class FlashbackPlayer(rawMemories: MutableList<NativeImage>) : Screen(LiteralTex
 
     private fun Identifier.destroy(): Unit = textureManager.destroyTexture(this)
 
+    /**
+     * Cleanup on close
+     */
     override fun onClose() {
         memories.forEach { it.destroy() }
         super.onClose()
