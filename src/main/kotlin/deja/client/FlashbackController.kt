@@ -20,6 +20,9 @@ object FlashbackController : Controller("flashback") {
 
     object ClientTick : ClientTickEvents.StartTick {
         override fun onStartTick(client: MinecraftClient) {
+            // do not snap when not in world (like title screen, but allow menus when it world)
+            if (client.world == null) return
+
             ticks++
             if (ticks.rem(SNAP_TICK_FREQUENCY) == 0L) {
                 snap()
