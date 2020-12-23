@@ -42,10 +42,9 @@ class FlashbackPlayer(rawMemories: MutableList<NativeImage>) : AnimationScreen(L
 
     private fun drawMask(matrices: MatrixStack) {
         // https://www.desmos.com/calculator/00tmrlguuw
-        val zoom =
-            ((MASK_ZOOM_MAX - MASK_ZOOM_MIN) / MASK_TIME) * (time.pow(4) / MASK_TIME.pow(3)) + MASK_ZOOM_MIN
+        val zoom = (MASK_ZOOM_MAX - MASK_ZOOM_MIN) / MASK_TIME * time + MASK_ZOOM_MIN
 
-        val maskHeight = height * zoom
+        val maskHeight = height * 1 / zoom.coerceAtLeast(0f)
 
         drawCenteredImage(matrices, MASK_TEXTURE, maskHeight, maskHeight)
     }
@@ -83,12 +82,12 @@ class FlashbackPlayer(rawMemories: MutableList<NativeImage>) : AnimationScreen(L
 
     companion object {
         private const val MEMORY_GOAL: Int = 80
-        private const val MASK_TIME: Int = 8 * TICKS_PER_SECOND
-        private const val MEMORY_TIME_START: Int = (MASK_TIME * 0.55f).toInt()
+        private const val MASK_TIME: Int = 6 * TICKS_PER_SECOND
+        private const val MEMORY_TIME_START: Int = (MASK_TIME * 0.9f).toInt()
         private const val MEMORY_TIME_MIN: Int = MASK_TIME + MEMORY_TIME_START
         private const val MEMORY_TIME_MAX: Int = 27 * TICKS_PER_SECOND
-        private const val MASK_ZOOM_MIN: Float = 0.1f
-        private const val MASK_ZOOM_MAX: Float = 20.0f
+        private const val MASK_ZOOM_MIN: Float = 15f
+        private const val MASK_ZOOM_MAX: Float = 0f
         private const val MEMORY_ZOOM_MIN: Float = 0.05f
         private const val MEMORY_ZOOM_MAX: Float = 1f
         private val MASK_TEXTURE = Identifier("deja", "textures/gui/mask.png")
