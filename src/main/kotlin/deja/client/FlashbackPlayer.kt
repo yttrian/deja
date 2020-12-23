@@ -23,44 +23,73 @@ class FlashbackPlayer(rawMemories: MutableList<NativeImage>) : Screen(LiteralTex
 
     private val memories = rawMemories.asReversed().map { it.toTexture() }.also { rawMemories.clear() }
     private val totalMemories = memories.size
-    private val end = (totalMemories.coerceAtMost(MEMORY_GOAL) / MEMORY_GOAL.toFloat()) * MAX_END_TIME
+    private val memoryDuration =
+        ((totalMemories.coerceAtMost(MEMORY_GOAL) / MEMORY_GOAL.toFloat()) * MEMORY_TIME_MAX)
+            .toInt().coerceAtLeast(MEMORY_TIME_MIN)
     private var time = 0f
+    private var closing = false
 
     /**
      * Render loop
      */
     override fun render(matrices: MatrixStack, mouseX: Int, mouseY: Int, delta: Float) {
+        fun drawLastMemory() = drawCenteredImage(matrices, memories.last(), width.toFloat(), height.toFloat())
+
+        if (closing) {
+            drawLastMemory()
+            return
+        }
+
         time += delta
 
         renderBackground(matrices)
         super.render(matrices, mouseX, mouseY, delta)
 
-        val memory = memories.getOrNull(currentMemory()) ?: return onClose()
+        if (time > MEMORY_TIME_START) {
+            drawMemory(matrices)
+        }
 
-        textureManager.bindTexture(memory)
-
-        val zoom = (1 - BASE_ZOOM) / end * time + BASE_ZOOM
-        val memoryWidth = width * zoom
-        val memoryHeight = height * zoom
-        val memoryX = width / 2f - memoryWidth / 2f
-        val memoryY = height / 2f - memoryHeight / 2f
-
-        drawMemory(
-            matrices,
-            memoryX,
-            memoryY,
-            memoryWidth,
-            memoryHeight
-        )
+        if (closing) {
+            drawLastMemory()
+        } else {
+            drawMask(matrices)
+        }
     }
 
-    private fun drawMemory(
+    private fun drawMask(matrices: MatrixStack) {
+        // https://www.desmos.com/calculator/00tmrlguuw
+        val zoom =
+            ((MASK_ZOOM_MAX - MASK_ZOOM_MIN) / MASK_TIME) * (time.pow(4) / MASK_TIME.pow(3)) + MASK_ZOOM_MIN
+
+        val maskHeight = height * zoom
+
+        drawCenteredImage(matrices, MASK_TEXTURE, maskHeight, maskHeight)
+    }
+
+    private fun drawMemory(matrices: MatrixStack) {
+        val currentMemory = (((time - MEMORY_TIME_START) / memoryDuration).pow(3) * totalMemories).toInt()
+        val memory = memories.getOrNull(currentMemory) ?: return close()
+
+        // https://www.desmos.com/calculator/pa7q4vcnho
+        val zoom = (MEMORY_ZOOM_MAX - MEMORY_ZOOM_MIN) / memoryDuration * (time - MEMORY_TIME_START) + MEMORY_ZOOM_MIN
+
+        // https://www.desmos.com/calculator/s9dxn0mgxl
+        val memoryWidth = width * zoom
+        val memoryHeight = height * zoom
+
+        drawCenteredImage(matrices, memory, memoryWidth, memoryHeight)
+    }
+
+    private fun drawCenteredImage(
         matrices: MatrixStack,
-        x0: Float,
-        y0: Float,
+        texture: Identifier,
         width: Float,
         height: Float
     ) {
+        textureManager.bindTexture(texture)
+
+        val x0 = this.width / 2f - width / 2f
+        val y0 = this.height / 2f - height / 2f
         val x1 = x0 + width
         val y1 = y0 + height
 
@@ -75,8 +104,6 @@ class FlashbackPlayer(rawMemories: MutableList<NativeImage>) : Screen(LiteralTex
         BufferRenderer.draw(bufferBuilder)
     }
 
-    private fun currentMemory(): Int = ((time / end).pow(3) * totalMemories).toInt()
-
     /**
      * Render a solid black background
      */
@@ -89,6 +116,11 @@ class FlashbackPlayer(rawMemories: MutableList<NativeImage>) : Screen(LiteralTex
 
     private fun Identifier.destroy(): Unit = textureManager.destroyTexture(this)
 
+    private fun close() {
+        closing = true
+        onClose()
+    }
+
     /**
      * Cleanup on close
      */
@@ -97,10 +129,19 @@ class FlashbackPlayer(rawMemories: MutableList<NativeImage>) : Screen(LiteralTex
         super.onClose()
     }
 
+    private fun Int.pow(n: Int) = this.toFloat().pow(n)
+
     companion object {
-        private const val TICKS_PER_SECOND: Float = 20f
+        private const val TICKS_PER_SECOND: Int = 20
         private const val MEMORY_GOAL: Int = 80
-        private const val MAX_END_TIME: Float = 30 * TICKS_PER_SECOND
-        private const val BASE_ZOOM: Float = 0.3f
+        private const val MASK_TIME: Int = 9 * TICKS_PER_SECOND
+        private const val MEMORY_TIME_START: Int = (MASK_TIME * 0.40f).toInt()
+        private const val MEMORY_TIME_MIN: Int = MASK_TIME + MEMORY_TIME_START * 2
+        private const val MEMORY_TIME_MAX: Int = 27 * TICKS_PER_SECOND
+        private const val MASK_ZOOM_MIN: Float = 0.1f
+        private const val MASK_ZOOM_MAX: Float = 20.0f
+        private const val MEMORY_ZOOM_MIN: Float = 0.05f
+        private const val MEMORY_ZOOM_MAX: Float = 1f
+        private val MASK_TEXTURE = Identifier("deja", "textures/gui/mask.png")
     }
 }
