@@ -1,5 +1,6 @@
 package deja.client.flashback
 
+import deja.client.animation.Animation.TICKS_PER_SECOND
 import deja.client.animation.AnimationScreen
 import deja.client.animation.FramedAnimationComponent
 import net.minecraft.client.util.math.MatrixStack
@@ -38,8 +39,8 @@ class Memories(screen: AnimationScreen, startTime: Int, private val memories: Li
 
     companion object {
         private const val MEMORY_GOAL: Int = 80
-        private const val MEMORY_TIME_MIN: Int = 4 * AnimationScreen.TICKS_PER_SECOND
-        private const val MEMORY_TIME_MAX: Int = 27 * AnimationScreen.TICKS_PER_SECOND
+        private const val MEMORY_TIME_MIN: Int = 4 * TICKS_PER_SECOND
+        private const val MEMORY_TIME_MAX: Int = 27 * TICKS_PER_SECOND
         private const val MEMORY_Z_MIN: Float = 15f
         private const val MEMORY_Z_MAX: Float = 1f
     }

@@ -49,14 +49,17 @@ abstract class FramedAnimationComponent(private val screen: AnimationScreen, pri
      * Draw an image treating the center of the screen as (0, 0) position and the center of the image as the (x, y)
      */
     @Suppress("LongParameterList")
-    protected fun drawImage(
+    private fun drawImage(
         matrices: MatrixStack,
         texture: Identifier,
         x: Float,
         y: Float,
         width: Float,
         height: Float,
-        sprite: Sprite? = null
+        u0: Float = 0f,
+        u1: Float = 1f,
+        v0: Float = 0f,
+        v1: Float = 1f
     ) {
         TEXTURE_MANAGER.bindTexture(texture)
 
@@ -64,11 +67,6 @@ abstract class FramedAnimationComponent(private val screen: AnimationScreen, pri
         val y0 = this.height / 2f - height / 2f + y
         val x1 = x0 + width
         val y1 = y0 + height
-
-        val u0 = sprite?.minU ?: 0f
-        val u1 = sprite?.maxU ?: 1f
-        val v0 = sprite?.minV ?: 0f
-        val v1 = sprite?.maxV ?: 1f
 
         val bufferBuilder = Tessellator.getInstance().buffer
         val matrix = matrices.peek().model
@@ -80,6 +78,23 @@ abstract class FramedAnimationComponent(private val screen: AnimationScreen, pri
         bufferBuilder.end()
         BufferRenderer.draw(bufferBuilder)
     }
+
+    /**
+     * Draw a sprite at the specified x and y coordinates at the defined scale (1 being normal size)
+     */
+    protected fun drawSprite(matrices: MatrixStack, sprite: Sprite, x: Float, y: Float, scale: Float) =
+        drawImage(
+            matrices,
+            sprite.atlas.id,
+            x,
+            y,
+            sprite.width * scale,
+            sprite.height * scale,
+            sprite.minU,
+            sprite.maxU,
+            sprite.minV,
+            sprite.maxV
+        )
 
     /**
      * Draw an image centered on the screen

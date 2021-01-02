@@ -55,11 +55,4 @@ abstract class AnimationScreen(title: Text) : Screen(title) {
      * Close the screen
      */
     fun close() = onClose()
-
-    companion object {
-        /**
-         * Standard number of ticks per second
-         */
-        const val TICKS_PER_SECOND: Int = 20
-    }
 }
