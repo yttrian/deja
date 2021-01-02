@@ -1,7 +1,8 @@
-package deja.client
+package deja.client.flashback
 
 import com.mojang.blaze3d.systems.RenderSystem
 import deja.Controller
+import deja.client.PacketRegistrar
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.texture.NativeImage

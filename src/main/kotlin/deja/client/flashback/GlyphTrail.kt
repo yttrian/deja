@@ -1,4 +1,4 @@
-package deja.client
+package deja.client.flashback
 
 import net.fabricmc.fabric.mixin.client.particle.ParticleManagerAccessor
 import net.minecraft.client.MinecraftClient
