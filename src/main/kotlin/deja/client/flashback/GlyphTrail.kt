@@ -3,6 +3,7 @@ package deja.client.flashback
 import deja.client.animation.Animation.TICKS_PER_SECOND
 import deja.client.animation.AnimationScreen
 import deja.client.animation.FramedAnimationComponent
+import deja.client.animation.Spread
 import net.fabricmc.fabric.mixin.client.particle.ParticleManagerAccessor
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.util.math.MatrixStack
@@ -11,16 +12,24 @@ import net.minecraft.util.registry.Registry
 import kotlin.math.ceil
 import kotlin.random.Random
 
-class GlyphTrail(screen: AnimationScreen) : FramedAnimationComponent(screen, Random.nextInt(EARLIEST_START_TIME, 0)) {
+/**
+ * Trail of glyphs seen in the "memory tunnel"
+ */
+class GlyphTrail(private val screen: AnimationScreen, spread: Spread) :
+    FramedAnimationComponent(screen, EARLIEST_START_TIME * spread.fraction) {
     private val trail = List(TRAIL_LENGTH) { Glyph(this, it) }
-    private val posX = randomPosition(width)
-    private val posY = randomPosition(height)
+//    private val miniSpread = spread.split()
+    private val posX by lazy { choosePosition(width, spread.isUpper) }
+    private val posY by lazy { choosePosition(height, spread.isLower) }
     private val shuffledSprites = sprites.shuffled().asWrap()
 
-    private fun randomPosition(dimension: Int): Int {
+    private fun choosePosition(dimension: Int, full: Boolean): Int {
         val bounds = dimension / 2
-
-        return Random.nextInt(bounds + JITTER_MIN, bounds + JITTER_MAX) * if (Random.nextBoolean()) 1 else -1
+        return if (full) {
+            Random.nextInt(-bounds, bounds)
+        } else {
+            bounds * if (Random.nextBoolean()) 1 else -1
+        }
     }
 
     /**
@@ -32,7 +41,7 @@ class GlyphTrail(screen: AnimationScreen) : FramedAnimationComponent(screen, Ran
         }
 
         if (time > TRAVEL_TIME) {
-            rebase()
+            rebase(screen.time + (TRAVEL_TIME - time))
         }
     }
 
@@ -49,7 +58,7 @@ class GlyphTrail(screen: AnimationScreen) : FramedAnimationComponent(screen, Ran
             val y = glyphTrail.posY / z
             val sprite = chooseSprite(time)
 
-            glyphTrail.drawSprite(matrices, sprite, x, y, 1 / z)
+            glyphTrail.drawSprite(matrices, sprite, x, y, 2 / z)
         }
     }
 
@@ -62,15 +71,13 @@ class GlyphTrail(screen: AnimationScreen) : FramedAnimationComponent(screen, Ran
     private fun <T> List<T>.asWrap() = WrapList(this)
 
     companion object {
-        private const val TRAIL_LENGTH = 10
-        private const val Z_MIN = 12f
-        private const val Z_MAX = 0f
-        private const val Z_SPACING = 2f
-        private const val JITTER_MIN = 50
-        private const val JITTER_MAX = 125
-        private const val FREQUENCY = 2f * TICKS_PER_SECOND / TRAIL_LENGTH
-        private const val TRAVEL_TIME = 8 * TICKS_PER_SECOND
-        private const val EARLIEST_START_TIME = -TRAVEL_TIME / 4
+        private const val TRAIL_LENGTH: Int = 30
+        private const val Z_MIN: Float = 12f
+        private const val Z_MAX: Float = 0f
+        private const val Z_SPACING: Float = 2f
+        private const val FREQUENCY: Float = 1.2f * TICKS_PER_SECOND / TRAIL_LENGTH
+        private const val TRAVEL_TIME: Int = 5 * TICKS_PER_SECOND
+        private const val EARLIEST_START_TIME: Float = -TRAVEL_TIME * 1f
 
         private val sprites = MinecraftClient.getInstance().let { client ->
             val particleManagerAccessor = client.particleManager as ParticleManagerAccessor

@@ -2,6 +2,7 @@ package deja.client.flashback
 
 import deja.client.animation.Animation.TICKS_PER_SECOND
 import deja.client.animation.AnimationScreen
+import deja.client.animation.Spread
 import net.minecraft.client.gui.DrawableHelper
 import net.minecraft.client.texture.NativeImage
 import net.minecraft.client.util.math.MatrixStack
@@ -17,7 +18,7 @@ class FlashbackPlayer(rawMemories: MutableList<NativeImage>) : AnimationScreen(L
     private val memoryTextures = rawMemories.asReversed().map { it.toTexture("memory") }.also { rawMemories.clear() }
     private val memories = Memories(this, MEMORY_TIME_START, memoryTextures)
     private val memoriesFade = FadeBlack(this, MEMORY_TIME_START, MEMORY_FADE_TIME)
-    private val glyphTrails = List(GLYPH_TRAILS) { GlyphTrail(this) }
+    private val glyphTrails = List(GLYPH_TRAILS) { GlyphTrail(this, Spread(it, GLYPH_TRAILS)) }
 
     /**
      * Render loop
@@ -60,7 +61,7 @@ class FlashbackPlayer(rawMemories: MutableList<NativeImage>) : AnimationScreen(L
     }
 
     companion object {
-        private const val GLYPH_TRAILS: Int = 20
+        private const val GLYPH_TRAILS: Int = 40
         private const val MASK_TIME: Int = 6 * TICKS_PER_SECOND
         private const val MEMORY_TIME_START: Int = (MASK_TIME * 0.5f).toInt()
         private const val GLYPH_TIME_START: Int = (MASK_TIME * 0.6f).toInt()
