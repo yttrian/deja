@@ -21,7 +21,15 @@ class Mask(screen: AnimationScreen, startTime: Int, private val duration: Int) :
 
     companion object {
         private val MASK_TEXTURE = Identifier("deja", "textures/gui/mask.png")
-        private const val MASK_Z_MIN: Float = 5f
-        private const val MASK_Z_MAX: Float = 0 - 1f
+
+        /**
+         * Starting Z position of the mask
+         */
+        const val MASK_Z_MIN: Float = 5f
+
+        /**
+         * Ending Z position of the mask
+         */
+        const val MASK_Z_MAX: Float = 0 - 1f
     }
 }

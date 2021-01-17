@@ -61,8 +61,12 @@ class FlashbackPlayer(rawMemories: MutableList<NativeImage>) : AnimationScreen(L
     }
 
     companion object {
-        private const val GLYPH_TRAILS: Int = 40
-        private const val MASK_TIME: Int = 6 * TICKS_PER_SECOND
+        private const val GLYPH_TRAILS: Int = 15
+
+        /**
+         * The duration of the mask approach
+         */
+        const val MASK_TIME: Int = 6 * TICKS_PER_SECOND
         private const val MEMORY_TIME_START: Int = (MASK_TIME * 0.5f).toInt()
         private const val GLYPH_TIME_START: Int = (MASK_TIME * 0.6f).toInt()
         private const val MASK_FADE_TIME: Int = 4 * TICKS_PER_SECOND
