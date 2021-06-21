@@ -2,7 +2,6 @@ package deja.client.flashback
 
 import com.mojang.blaze3d.systems.RenderSystem
 import deja.Controller
-import deja.client.PacketRegistrar
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.texture.NativeImage
@@ -13,12 +12,12 @@ import java.time.Duration
  * Flashback controller
  */
 object FlashbackController : Controller("flashback") {
-    private val SNAP_TICK_FREQUENCY = Duration.ofSeconds(5).toTicks()
+    private const val SNAP_FREQUENCY_SECONDS = 5L
+    private val SNAP_FREQUENCY_TICKS = Duration.ofSeconds(SNAP_FREQUENCY_SECONDS).toTicks()
 
     private val client = MinecraftClient.getInstance()
     private val snaps = mutableListOf<NativeImage>()
-    private var lastSnap = 0
-    private var ticks = 0
+    private var snapTickCountdown = SNAP_FREQUENCY_TICKS
 
     /**
      * Flashback client tick handler
@@ -32,8 +31,7 @@ object FlashbackController : Controller("flashback") {
             // also do not snap the flashback, that'd be weird
             if (client.world == null || client.currentScreen is FlashbackPlayer) return
 
-            ticks++
-            if (ticks - lastSnap > SNAP_TICK_FREQUENCY) {
+            if (--snapTickCountdown < 0) {
                 snap()
             }
         }
@@ -44,14 +42,16 @@ object FlashbackController : Controller("flashback") {
      */
     fun go() = client.openScreen(FlashbackPlayer(snaps))
 
-    private fun snap() = RenderSystem.recordRenderCall {
-        lastSnap = ticks
-        val window = client.window
-        val snap = ScreenshotUtils.takeScreenshot(
-            window.framebufferWidth,
-            window.framebufferHeight,
-            PacketRegistrar.Office.client.framebuffer
-        )
-        snaps.add(snap)
+    private fun snap() {
+        snapTickCountdown = SNAP_FREQUENCY_TICKS
+        RenderSystem.recordRenderCall {
+            val window = client.window
+            val snap = ScreenshotUtils.takeScreenshot(
+                window.framebufferWidth,
+                window.framebufferHeight,
+                client.framebuffer
+            )
+            snaps.add(snap)
+        }
     }
 }

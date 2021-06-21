@@ -48,7 +48,7 @@ class GlyphTrail(private val screen: AnimationScreen, spread: Spread) :
         }
 
         if (time > TRAVEL_TIME) {
-            rebase(screen.time + (TRAVEL_TIME - time))
+            rebaseStartTime(screen.time + (TRAVEL_TIME - time))
         }
     }
 

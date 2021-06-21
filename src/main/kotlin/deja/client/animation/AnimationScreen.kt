@@ -7,6 +7,7 @@ import net.minecraft.client.texture.NativeImageBackedTexture
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
+import org.apache.logging.log4j.util.PerformanceSensitive
 
 /**
  * Screen used for animations
@@ -26,13 +27,13 @@ abstract class AnimationScreen(title: Text) : Screen(title) {
     override fun render(matrices: MatrixStack, mouseX: Int, mouseY: Int, delta: Float) {
         time += delta
         renderBackground(matrices)
-        super.render(matrices, mouseX, mouseY, delta)
         render(matrices)
     }
 
     /**
      * Animation loop
      */
+    @PerformanceSensitive("Minecraft Render Loop")
     abstract fun render(matrices: MatrixStack)
 
     /**

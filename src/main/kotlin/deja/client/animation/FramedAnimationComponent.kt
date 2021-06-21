@@ -7,6 +7,7 @@ import net.minecraft.client.render.VertexFormats
 import net.minecraft.client.texture.Sprite
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.util.Identifier
+import org.apache.logging.log4j.util.PerformanceSensitive
 import org.lwjgl.opengl.GL11C
 
 /**
@@ -41,7 +42,7 @@ abstract class FramedAnimationComponent(private val screen: AnimationScreen, pri
     /**
      * Rebase the start time to a new screen based time, default value is current screen time
      */
-    protected fun rebase(time: Float = screen.time) {
+    protected fun rebaseStartTime(time: Float = screen.time) {
         startTime = time
     }
 
@@ -116,6 +117,7 @@ abstract class FramedAnimationComponent(private val screen: AnimationScreen, pri
     /**
      * Render loop
      */
+    @PerformanceSensitive("Minecraft Render Loop")
     protected abstract fun render(matrices: MatrixStack, time: Float)
 
     companion object {
