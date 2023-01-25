@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "deja",
   "version": "${version}",
-  "name": "Deja",
+  "name": "deja",
   "description": "Outer Wilds inspired timeloop",
   "authors": [
     "Throudin"
@@ -12,29 +12,26 @@
     "repo": "https://github.com/yttrian/deja"
   },
   "license": "MIT",
-  "icon": "assets/deja/icon.png",
   "environment": "*",
   "entrypoints": {
     "client": [
       {
-        "adapter": "kotlin",
-        "value": "deja.client.DejaFabricClient"
+        "value": "org.yttr.deja.client.DejaFabricClient",
+        "adapter": "kotlin"
       }
     ],
     "main": [
       {
-        "adapter": "kotlin",
-        "value": "deja.DejaFabric"
+        "value": "org.yttr.deja.DejaFabric",
+        "adapter": "kotlin"
       }
     ]
   },
-  "mixins": [
-    "deja.mixins.json"
-  ],
   "depends": {
-    "fabricloader": ">=0.10.8",
-    "fabric": "*",
-    "fabric-language-kotlin": ">=1.4.21",
-    "minecraft": "1.16.4"
+    "fabricloader": ">=0.14.13",
+    "minecraft": "~1.19.3",
+    "java": ">=17",
+    "fabric-api": "*",
+    "fabric-language-kotlin": ">=1.8.0"
   }
 }

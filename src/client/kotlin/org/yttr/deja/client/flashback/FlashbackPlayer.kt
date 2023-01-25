@@ -1,12 +1,12 @@
-package deja.client.flashback
+package org.yttr.deja.client.flashback
 
-import deja.client.animation.Animation.TICKS_PER_SECOND
-import deja.client.animation.AnimationScreen
-import deja.client.animation.Spread
 import net.minecraft.client.gui.DrawableHelper
 import net.minecraft.client.texture.NativeImage
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.text.LiteralText
+import org.yttr.deja.client.animation.Animation.TICKS_PER_SECOND
+import org.yttr.deja.client.animation.AnimationScreen
+import org.yttr.deja.client.animation.Spread
 import java.awt.Color
 
 /**

@@ -1,10 +1,10 @@
-package deja.client.flashback
+package org.yttr.deja.client.flashback
 
-import deja.client.animation.Animation.TICKS_PER_SECOND
-import deja.client.animation.AnimationScreen
-import deja.client.animation.FramedAnimationComponent
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.util.Identifier
+import org.yttr.deja.client.animation.Animation.TICKS_PER_SECOND
+import org.yttr.deja.client.animation.AnimationScreen
+import org.yttr.deja.client.animation.FramedAnimationComponent
 import kotlin.math.pow
 
 /**

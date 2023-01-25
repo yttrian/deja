@@ -1,11 +1,11 @@
-package deja.client
+package org.yttr.deja.client
 
-import deja.TimeloopController
-import deja.client.flashback.FlashbackController
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
+import org.yttr.deja.TimeloopController
+import org.yttr.deja.client.flashback.FlashbackController
 
 /**
  * Entry point for the Deja client mod

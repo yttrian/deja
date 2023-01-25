@@ -1,4 +1,4 @@
-package deja.client
+package org.yttr.deja.client
 
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry
 import net.fabricmc.fabric.api.network.PacketContext

@@ -1,14 +1,14 @@
-package deja.client.flashback
+package org.yttr.deja.client.flashback
 
-import deja.client.animation.Animation.TICKS_PER_SECOND
-import deja.client.animation.AnimationScreen
-import deja.client.animation.FramedAnimationComponent
-import deja.client.animation.Spread
 import net.fabricmc.fabric.mixin.client.particle.ParticleManagerAccessor
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.particle.ParticleTypes
 import net.minecraft.util.registry.Registry
+import org.yttr.deja.client.animation.Animation.TICKS_PER_SECOND
+import org.yttr.deja.client.animation.AnimationScreen
+import org.yttr.deja.client.animation.FramedAnimationComponent
+import org.yttr.deja.client.animation.Spread
 import kotlin.math.absoluteValue
 import kotlin.math.ceil
 import kotlin.random.Random

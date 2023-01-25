@@ -1,4 +1,4 @@
-package deja.client.animation
+package org.yttr.deja.client.animation
 
 /**
  * Constants regarding animations

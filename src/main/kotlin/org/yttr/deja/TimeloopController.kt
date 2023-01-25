@@ -1,4 +1,4 @@
-package deja
+package org.yttr.deja
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
 import net.minecraft.server.MinecraftServer
@@ -13,7 +13,7 @@ object TimeloopController : Controller("timeloop") {
     /**
      * Packet for requesting clients play their flashback
      */
-    val REPLAY_PACKET = Identifier("deja", "flashback.replay")
+    val REPLAY_PACKET = Identifier("org/yttr/deja", "flashback.replay")
     private val TIMELOOP_DURATION = Duration.ofMinutes(22).toTicks()
     private var lastLoop = 0
 
