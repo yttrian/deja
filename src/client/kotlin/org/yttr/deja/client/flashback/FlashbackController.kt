@@ -1,11 +1,11 @@
-package deja.client.flashback
+package org.yttr.deja.client.flashback
 
 import com.mojang.blaze3d.systems.RenderSystem
-import deja.Controller
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.texture.NativeImage
 import net.minecraft.client.util.ScreenshotUtils
+import org.yttr.deja.Controller
 import java.time.Duration
 
 /**

@@ -1,4 +1,4 @@
-package deja
+package org.yttr.deja
 
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.builder.LiteralArgumentBuilder

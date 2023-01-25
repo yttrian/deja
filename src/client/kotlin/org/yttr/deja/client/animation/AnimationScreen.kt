@@ -1,4 +1,4 @@
-package deja.client.animation
+package org.yttr.deja.client.animation
 
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.screen.Screen

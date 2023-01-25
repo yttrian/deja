@@ -1,9 +1,9 @@
-package deja.client.flashback
+package org.yttr.deja.client.flashback
 
-import deja.client.animation.AnimationScreen
-import deja.client.animation.FramedAnimationComponent
 import net.minecraft.client.gui.DrawableHelper
 import net.minecraft.client.util.math.MatrixStack
+import org.yttr.deja.client.animation.AnimationScreen
+import org.yttr.deja.client.animation.FramedAnimationComponent
 import java.awt.Color
 
 /**
